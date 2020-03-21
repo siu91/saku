@@ -10,11 +10,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 派发ID
+ * 使用 LongAdder 会冲突，可能逻辑有问题，但是换成AtomicLong 50个线程下并没有冲突
  *
  * @Author Siu
  * @Date 2020/3/21 15:19
@@ -28,15 +31,16 @@ public class Distributor {
      * 注册时申请每一段ID的大小，默认1000
      */
     @Setter
-    private int sectionSize = 5;
+    private int sectionSize = 1000;
 
     protected final DSLContext dsl;
+
 
     /**
      * 自增ID派发器
      */
-    private final LongAdder globalStart = new LongAdder();
-    private final LongAdder globalEnd = new LongAdder();
+    private final AtomicLong globalStart = new AtomicLong(0);
+    private final AtomicLong globalEnd = new AtomicLong(0);
 
 
     @Autowired
@@ -50,13 +54,11 @@ public class Distributor {
      *
      * @return
      */
-    public long distributeId() throws CanNotRegisterNewStartIdError {
-        if (this.globalStart.sum() < this.globalEnd.sum()) {
-            this.globalStart.increment();
-        } else {
+    public long distributeId(String tid) throws CanNotRegisterNewStartIdError {
+        if (this.globalStart.get() >= this.globalEnd.get()) {
             register();
         }
-        return this.globalStart.sum();
+        return this.globalStart.addAndGet(1);
     }
 
 
@@ -66,10 +68,10 @@ public class Distributor {
      */
     private synchronized void register() throws CanNotRegisterNewStartIdError {
         long nextStart = getNextStart();
-        this.globalStart.add(nextStart - this.globalStart.sum());
-        this.globalEnd.add(nextStart - this.globalStart.sum() + sectionSize);
+        this.globalStart.set(nextStart);
+        this.globalEnd.set(nextStart + sectionSize - 1);
 
-        log.info("注册ID号段[{}-{}]", this.globalStart.sum(), this.globalEnd.sum());
+        log.info("注册ID号段[{}-{}]", this.globalStart.get(), this.globalEnd.get() + 1);
     }
 
     /**

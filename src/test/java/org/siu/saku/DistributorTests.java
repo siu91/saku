@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.siu.saku.exception.CanNotRegisterNewStartIdError;
 import org.siu.saku.generator.distributor.AtomicLongDistributor;
+import org.siu.saku.generator.distributor.LongAdderDistributor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,11 +25,12 @@ public class DistributorTests {
 
     @Autowired
     AtomicLongDistributor distributor;
+    //LongAdderDistributor distributor;
 
     @Test
     public void test() throws CanNotRegisterNewStartIdError {
         for (int i = 0; i < 1000000; i++) {
-            System.out.println(distributor.distributeId());
+            System.out.println(distributor.next());
         }
 
     }
@@ -46,7 +48,7 @@ public class DistributorTests {
                 public void run() {
                     //     System.out.println("thread-" + finalI);
                     for (int i = 0; i < 1000000; i++) {
-                        long id = distributor.distributeId();
+                        long id = distributor.next();
                         System.out.println("thread-" + finalI + ":" + id);
                         if (map.containsKey(id)) {
                             System.out.println("thread-" + finalI + ":hit-" + id);

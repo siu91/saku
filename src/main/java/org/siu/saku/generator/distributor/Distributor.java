@@ -1,7 +1,6 @@
 package org.siu.saku.generator.distributor;
 
 
-
 /**
  * 派发
  *
@@ -16,6 +15,13 @@ public interface Distributor {
      *
      * @return
      */
-    long distributeId();
+    long next();
+
+    /**
+     * 当前值
+     *
+     * @return
+     */
+    long current();
 
 }

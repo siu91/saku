@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 派发ID
@@ -18,16 +19,16 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Component
 @Slf4j
-public class AtomicLongDistributor extends AbstractDistributor {
+public class LongAdderDistributor extends AbstractDistributor {
 
     /**
      * 自增ID派发器
      */
-    private final AtomicLong current = new AtomicLong(0);
+    private final LongAdder adder = new LongAdder();
     private final AtomicLong currentEnd = new AtomicLong(0);
 
     @Autowired
-    public AtomicLongDistributor(DSLContext dsl) {
+    public LongAdderDistributor(DSLContext dsl) {
         super(dsl);
         register();
     }
@@ -35,10 +36,11 @@ public class AtomicLongDistributor extends AbstractDistributor {
 
     @Override
     public long getNext() {
-        if (this.current.get() >= this.currentEnd.get()) {
+        if (this.adder.sum() >= this.currentEnd.get()) {
             register();
         }
-        return this.current.addAndGet(1);
+        this.adder.increment();
+        return this.adder.sum();
     }
 
 
@@ -47,19 +49,20 @@ public class AtomicLongDistributor extends AbstractDistributor {
      * 并设置给 distributor
      */
     @Override
-    public synchronized void register() {
-        IdSection idSection = getNextIdSection();
-        if (idSection.isSuccess()) {
-            this.current.set(idSection.getStart());
-            this.currentEnd.set(idSection.getEnd() - 1);
-            log.info("注册ID号段[{}-{}]", idSection.getStart(), idSection.getEnd());
+    public void register() {
+        synchronized (this.adder) {
+            IdSection idSection = getNextIdSection();
+            if (idSection.isSuccess()) {
+                this.adder.add(idSection.getStart() - this.currentEnd.get());
+                this.currentEnd.set(idSection.getEnd() - 1);
+                log.info("注册ID号段[{}-{}]", idSection.getStart(), idSection.getEnd());
+            }
         }
-
     }
 
 
     @Override
     public long current() {
-        return this.current.get();
+        return this.adder.sum();
     }
 }

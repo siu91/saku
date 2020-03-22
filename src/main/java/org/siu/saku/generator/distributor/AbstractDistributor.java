@@ -41,8 +41,8 @@ public abstract class AbstractDistributor implements Distributor {
      * @return
      */
     @Override
-    public long distributeId() {
-        return doDistributeId();
+    public long next() {
+        return getNext();
     }
 
 
@@ -51,7 +51,7 @@ public abstract class AbstractDistributor implements Distributor {
      *
      * @return
      */
-    public abstract long doDistributeId();
+    public abstract long getNext();
 
     /**
      * 注册新的ID号段

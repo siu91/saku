@@ -2,6 +2,7 @@ package org.siu.saku.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.siu.saku.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
 import org.siu.saku.jooq.tables.SakuPreRegister;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
@@ -33,11 +34,11 @@ public class AutoIncrGenerator extends AbstractGenerator {
     @Override
     public Url shorten(String url) {
         long id = distributor.next();
-        while (!save2Db(id, url, "")) {
+        while (!save2Db(id, url, SakuUtil.id2SUrl(id))) {
             id = distributor.next();
         }
 
-        return new Url(id + "", url);
+        return new Url(SakuUtil.id2SUrl(id), url);
     }
 
     /**
@@ -61,4 +62,6 @@ public class AutoIncrGenerator extends AbstractGenerator {
         return success;
 
     }
+
+
 }

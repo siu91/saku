@@ -28,7 +28,7 @@
 
 ## Features
 
-- 支持
+- 支持MurmurHash/DB Auto Incr 高性能生成短链
 
 ## Quick Start
 
@@ -66,7 +66,8 @@
 
 ## TODO
 
-1. xx
+1. 提供压测数据
+2. 支持多种数据库（mysql 、Oracle）
 
 
 ## Feedback

@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.siu.saku.exception.CanNotRegisterNewStartIdError;
-import org.siu.saku.generator.preregister.Distributor;
+import org.siu.saku.generator.distributor.AtomicLongDistributor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DistributorTests {
 
     @Autowired
-    Distributor distributor;
+    AtomicLongDistributor distributor;
 
     @Test
     public void test() throws CanNotRegisterNewStartIdError {
@@ -44,7 +44,7 @@ public class DistributorTests {
                 @SneakyThrows
                 @Override
                 public void run() {
-                    System.out.println("thread-" + finalI);
+                    //     System.out.println("thread-" + finalI);
                     for (int i = 0; i < 1000000; i++) {
                         long id = distributor.distributeId();
                         System.out.println("thread-" + finalI + ":" + id);
@@ -59,8 +59,9 @@ public class DistributorTests {
 
 
         }
-        Thread.sleep(1000000000);
+        Thread.sleep(2 * 60 * 1000);
     }
+
 
 
 }

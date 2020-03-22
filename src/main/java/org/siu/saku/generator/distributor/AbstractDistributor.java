@@ -1,19 +1,14 @@
-package org.siu.saku.generator.preregister;
+package org.siu.saku.generator.distributor;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.siu.saku.exception.CanNotRegisterNewStartIdError;
 import org.siu.saku.jooq.tables.SakuPreRegister;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.siu.saku.model.IdSection;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 派发ID
@@ -25,28 +20,19 @@ import java.util.concurrent.atomic.LongAdder;
  */
 @Component
 @Slf4j
-public class Distributor {
+public abstract class AbstractDistributor implements Distributor {
 
     /**
      * 注册时申请每一段ID的大小，默认1000
      */
     @Setter
-    private int sectionSize = 1000;
+    protected int sectionSize = 1000;
 
     protected final DSLContext dsl;
 
 
-    /**
-     * 自增ID派发器
-     */
-    private final AtomicLong globalStart = new AtomicLong(0);
-    private final AtomicLong globalEnd = new AtomicLong(0);
-
-
-    @Autowired
-    public Distributor(DSLContext dsl) throws CanNotRegisterNewStartIdError {
+    public AbstractDistributor(DSLContext dsl) {
         this.dsl = dsl;
-        register();
     }
 
     /**
@@ -54,25 +40,24 @@ public class Distributor {
      *
      * @return
      */
-    public long distributeId(String tid) throws CanNotRegisterNewStartIdError {
-        if (this.globalStart.get() >= this.globalEnd.get()) {
-            register();
-        }
-        return this.globalStart.addAndGet(1);
+    @Override
+    public long distributeId() {
+        return doDistributeId();
     }
 
 
     /**
-     * 往数据库中注册一个号段
-     * 并设置给 distributor
+     * 由子类实现ID 派发
+     *
+     * @return
      */
-    private synchronized void register() throws CanNotRegisterNewStartIdError {
-        long nextStart = getNextStart();
-        this.globalStart.set(nextStart);
-        this.globalEnd.set(nextStart + sectionSize - 1);
+    public abstract long doDistributeId();
 
-        log.info("注册ID号段[{}-{}]", this.globalStart.get(), this.globalEnd.get() + 1);
-    }
+    /**
+     * 注册新的ID号段
+     */
+    public abstract void register();
+
 
     /**
      * 获取下一个号段
@@ -80,8 +65,10 @@ public class Distributor {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public long getNextStart() throws CanNotRegisterNewStartIdError {
-        long start;
+    public IdSection getNextIdSection() {
+        IdSection idSection = new IdSection();
+        boolean success = true;
+        long start = -1;
         try {
             // 获取当前最大的ID
             Object currentMax = dsl.select(SakuPreRegister.SAKU_PRE_REGISTER.END_NO.max()).from(SakuPreRegister.SAKU_PRE_REGISTER).fetch().getValue(0, 0);
@@ -97,10 +84,12 @@ public class Distributor {
                     SakuPreRegister.SAKU_PRE_REGISTER.START_NO, SakuPreRegister.SAKU_PRE_REGISTER.END_NO, SakuPreRegister.SAKU_PRE_REGISTER.CREATE_TIME)
                     .values(start, end, new Timestamp(System.currentTimeMillis())).execute();
         } catch (Exception e) {
-            throw new CanNotRegisterNewStartIdError(e.getMessage());
+            success = false;
+            log.error("CanNotRegisterNewStartIdError");
+
         }
 
-        return start;
+        return idSection.setStart(start).setEnd(start + sectionSize).setSuccess(success);
 
 
     }

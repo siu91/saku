@@ -1,21 +1,8 @@
-spring:
-  http:
-    encoding:
-      charset: utf-8
-      enabled: true
-      force: true
-# 服务启动的端口
-server:
-  port: 9555
-
 saku:
-  type: dbincr
+  type: hash
 
-
+spring:
   datasource:
-    # 1、默认的数据源配置（单数据源）
-    #url: jdbc:postgresql://localhost:5432/ganxu?currentSchema=ganxu&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
-    # 使用p6spy
     url: jdbc:postgresql://postgres.host:5432/ganxu?currentSchema=ganxu&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
     username: postgres
     password: postgres
@@ -37,3 +24,7 @@ saku:
       # 数据库连接超时时间,默认30秒，即30000
       connection-timeout: 30000
       #connection-test-query: SELECT 1
+
+# 服务启动的端口
+server:
+  port: 9555

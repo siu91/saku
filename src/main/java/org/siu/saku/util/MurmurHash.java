@@ -69,8 +69,9 @@ public class MurmurHash {
      * Long转换成无符号长整型（C中数据类型）
      */
     public static BigDecimal readUnsignedLong(long value) {
-        if (value >= 0)
+        if (value >= 0) {
             return new BigDecimal(value);
+        }
         long lowValue = value & 0x7fffffffffffffffL;
         return BigDecimal.valueOf(lowValue).add(BigDecimal.valueOf(Long.MAX_VALUE)).add(BigDecimal.valueOf(1));
     }

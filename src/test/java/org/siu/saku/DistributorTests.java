@@ -47,6 +47,30 @@ public class DistributorTests {
     }
 
     @Test
+    public void testhash3() throws InterruptedException {
+
+        Map<Long, String> map = new ConcurrentHashMap<>();
+
+        for (int i = 0; i < 50; i++) {
+            int finalI = i;
+            new Thread() {
+                @SneakyThrows
+                @Override
+                public void run() {
+                    System.out.println("thread-" + finalI);
+                    for (int i = 0; i < 1000000; i++) {
+                        generator1.shorten(UUID.randomUUID().toString());
+                    }
+
+                }
+            }.start();
+
+
+        }
+        Thread.sleep(2 * 60 * 1000);
+    }
+
+    @Test
     public void test0() {
         generator.getUrl("8gv8iw");
 

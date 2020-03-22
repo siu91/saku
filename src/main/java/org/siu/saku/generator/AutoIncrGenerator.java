@@ -6,7 +6,6 @@ import org.siu.saku.util.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.model.Url;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

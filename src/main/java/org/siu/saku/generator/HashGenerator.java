@@ -7,7 +7,6 @@ import org.siu.saku.jooq.tables.SakuUrlMap;
 import org.siu.saku.model.Url;
 import org.siu.saku.util.MurmurHash;
 import org.siu.saku.util.SakuUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

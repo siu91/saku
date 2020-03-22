@@ -68,29 +68,21 @@ public abstract class AbstractDistributor implements Distributor {
     public IdSection getNextIdSection() {
         IdSection idSection = new IdSection();
         boolean success = true;
-        long start = -1;
+        long nextStart = -1;
         try {
             // 获取当前最大的ID
             Object currentMax = dsl.select(SakuPreRegister.SAKU_PRE_REGISTER.END_NO.max()).from(SakuPreRegister.SAKU_PRE_REGISTER).fetch().getValue(0, 0);
-            if (currentMax == null) {
-                start = 0L;
-            } else {
-                start = (Long) currentMax;
-            }
-
-            long end = start + sectionSize;
+            nextStart = currentMax == null ? 0 : (Long) currentMax;
             // 注册新的ID号段
             dsl.insertInto(SakuPreRegister.SAKU_PRE_REGISTER,
                     SakuPreRegister.SAKU_PRE_REGISTER.START_NO, SakuPreRegister.SAKU_PRE_REGISTER.END_NO, SakuPreRegister.SAKU_PRE_REGISTER.CREATE_TIME)
-                    .values(start, end, new Timestamp(System.currentTimeMillis())).execute();
+                    .values(nextStart, nextStart + this.sectionSize, new Timestamp(System.currentTimeMillis())).execute();
         } catch (Exception e) {
             success = false;
             log.error("CanNotRegisterNewStartIdError");
-
         }
 
-        return idSection.setStart(start).setEnd(start + sectionSize).setSuccess(success);
-
+        return idSection.setStart(nextStart).setEnd(nextStart + sectionSize).setSuccess(success);
 
     }
 

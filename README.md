@@ -32,25 +32,37 @@
 
 ## Quick Start
 
-* git clone & mvn install  到本地（todo	 发布到maven）
-
-* Add dependency
-
-  ```java
-      <dependency>
-        <groupId>org.siu</groupId>
-        <artifactId>saku</artifactId>
-        <version>1.0.0.RC1</version>
-      </dependency>
-  ```
+* git clone
 
 - 配置
 
   ```yml
+  saku:
+    type: hash # 默认hash（基于Murmurhash）,可选dbincr（数据库自增）
+  
+  spring:
+    datasource:
+      url: jdbc:postgresql://postgres.host:5432/xxx
+      username: postgres
+      password: postgres
+      driver-class-name: org.postgresql.Driver
+  
+  # 服务启动的端口
+  server:
+    port: 9555
   
   ```
 
-  
+- 启动服务
+
+- 生成短链 /v1/saku/s/{long_url}
+
+  ![image-20200322213919662](./assets/image-20200322213919662.png)
+
+- 使用短链换取原URL:/v1/saku/l/{short_url}
+- ![image-20200322214105681](./assets/image-20200322214105681.png)
+
+
 
 ## TODO
 

@@ -64,6 +64,9 @@ public abstract class AbstractDistributor implements Distributor {
      * start = currentSeq * sectionSize - sectionSize + 1;
      * end = currentSeq * sectionSize;
      *
+     * mysql：
+     * SELECT AUTO_INCREMENT FROM information_schema.`TABLES` WHERE Table_Schema='数据库名' AND table_name = '对应数据库下表名' LIMIT 1;
+     *
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
@@ -90,6 +93,8 @@ public abstract class AbstractDistributor implements Distributor {
         return idSection.setStart(start).setEnd(end).setSuccess(success);
 
     }
+
+
 
 
 }

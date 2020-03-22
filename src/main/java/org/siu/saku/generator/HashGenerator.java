@@ -7,7 +7,6 @@ import org.siu.saku.jooq.tables.SakuUrlMap;
 import org.siu.saku.model.Url;
 import org.siu.saku.util.MurmurHash;
 import org.siu.saku.util.SakuUtil;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -20,7 +19,6 @@ import java.sql.Timestamp;
  * @Version 0.0.1
  */
 @Slf4j
-@Service
 public class HashGenerator extends AbstractGenerator {
 
     @Resource

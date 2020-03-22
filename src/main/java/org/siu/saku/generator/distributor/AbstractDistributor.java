@@ -20,7 +20,6 @@ import java.sql.Timestamp;
  * @Date 2020/3/21 15:19
  * @Version 0.0.1
  */
-@Component
 @Slf4j
 public abstract class AbstractDistributor implements Distributor {
 
@@ -30,8 +29,11 @@ public abstract class AbstractDistributor implements Distributor {
     @Setter
     protected int sectionSize = 1000;
 
-    @Resource
-    protected DSLContext dsl;
+    protected final DSLContext dsl;
+
+    public AbstractDistributor(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
     /**
      * 派发ID

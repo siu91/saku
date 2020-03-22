@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @Date 2020/3/21 15:19
  * @Version 0.0.1
  */
-@Component(value = "atomicLongDistributor")
 @Slf4j
 public class AtomicLongDistributor extends AbstractDistributor {
 
@@ -27,8 +26,9 @@ public class AtomicLongDistributor extends AbstractDistributor {
     private final AtomicLong currentEnd = new AtomicLong(0);
 
 
-    public AtomicLongDistributor() {
-        super();
+    public AtomicLongDistributor(DSLContext dsl) {
+        super(dsl);
+        register();
     }
 
     @Override

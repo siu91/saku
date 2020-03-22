@@ -11,4 +11,6 @@ spring:
 server:
   port: 9555
 
+saku:
+  type: dbincr
 

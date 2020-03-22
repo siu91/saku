@@ -6,7 +6,6 @@ import org.siu.saku.util.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.model.Url;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -19,14 +18,16 @@ import java.sql.Timestamp;
  * @Version 0.0.1
  */
 @Slf4j
-@Service
 public class AutoIncrGenerator extends AbstractGenerator {
 
-    @Resource(name = "longAdderDistributor")
-    Distributor distributor;
+    private final Distributor distributor;
 
     @Resource
     protected DSLContext dsl;
+
+    public AutoIncrGenerator(Distributor distributor) {
+        this.distributor = distributor;
+    }
 
 
     @Override

@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.LongAdder;
  * @Date 2020/3/21 15:19
  * @Version 0.0.1
  */
-@Component(value = "longAdderDistributor")
 @Slf4j
 public class LongAdderDistributor extends AbstractDistributor {
 
@@ -27,8 +26,9 @@ public class LongAdderDistributor extends AbstractDistributor {
     private final LongAdder adder = new LongAdder();
     private final AtomicLong currentEnd = new AtomicLong(0);
 
-    public LongAdderDistributor() {
-        super();
+    public LongAdderDistributor(DSLContext dsl) {
+        super(dsl);
+        register();
     }
 
 

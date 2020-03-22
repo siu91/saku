@@ -21,7 +21,7 @@ public abstract class AbstractGenerator implements Generator {
      * @param surl
      * @return
      */
-    abstract Url getUrl(String surl);
+    public abstract Url getUrl(String surl);
 
 
 }

@@ -1,8 +1,6 @@
 package org.siu.saku.generator;
 
-import org.jooq.DSLContext;
 import org.siu.saku.model.Url;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @Author Siu
@@ -10,10 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Version 0.0.1
  */
 public abstract class AbstractGenerator implements Generator {
-
-    @Autowired
-    protected DSLContext dsl;
-
 
     @Override
     public Url generator(String url) {

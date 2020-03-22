@@ -8,6 +8,7 @@ import org.siu.saku.model.IdSection;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.sql.Timestamp;
 
 /**
@@ -28,12 +29,8 @@ public abstract class AbstractDistributor implements Distributor {
     @Setter
     protected int sectionSize = 1000;
 
-    protected final DSLContext dsl;
-
-
-    public AbstractDistributor(DSLContext dsl) {
-        this.dsl = dsl;
-    }
+    @Resource
+    protected  DSLContext dsl;
 
     /**
      * 派发ID

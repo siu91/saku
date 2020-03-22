@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.siu.saku.autoconfigure.SakuAutoConfigrue
+org.siu.saku.autoconfigure.SakuAutoConfigure

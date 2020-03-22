@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.siu.saku.exception.CanNotRegisterNewStartIdError;
+import org.siu.saku.generator.AutoIncrGenerator;
 import org.siu.saku.generator.distributor.AtomicLongDistributor;
 import org.siu.saku.generator.distributor.LongAdderDistributor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -27,16 +29,44 @@ public class DistributorTests {
     AtomicLongDistributor distributor;
     //LongAdderDistributor distributor;
 
+    @Autowired
+    AutoIncrGenerator generator;
+
     @Test
-    public void test() throws CanNotRegisterNewStartIdError {
+    public void test() {
         for (int i = 0; i < 1000000; i++) {
-            System.out.println(distributor.next());
+            generator.shorten(UUID.randomUUID().toString());
         }
 
     }
 
     @Test
     public void test2() throws InterruptedException {
+
+        Map<Long, String> map = new ConcurrentHashMap<>();
+
+        for (int i = 0; i < 50; i++) {
+            int finalI = i;
+            new Thread() {
+                @SneakyThrows
+                @Override
+                public void run() {
+                        System.out.println("thread-" + finalI);
+                    for (int i = 0; i < 1000000; i++) {
+                        generator.shorten(UUID.randomUUID().toString());
+                    }
+
+                }
+            }.start();
+
+
+        }
+        Thread.sleep(2 * 60 * 1000);
+    }
+
+
+    @Test
+    public void test3() throws InterruptedException {
 
         Map<Long, String> map = new ConcurrentHashMap<>();
 
@@ -63,7 +93,6 @@ public class DistributorTests {
         }
         Thread.sleep(2 * 60 * 1000);
     }
-
 
 
 }

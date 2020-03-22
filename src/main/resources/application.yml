@@ -1,7 +1,4 @@
 spring:
-  # 指定环境
-  profiles:
-    active: dev
   http:
     encoding:
       charset: utf-8
@@ -14,3 +11,29 @@ server:
 saku:
   type: dbincr
 
+
+  datasource:
+    # 1、默认的数据源配置（单数据源）
+    #url: jdbc:postgresql://localhost:5432/ganxu?currentSchema=ganxu&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+    # 使用p6spy
+    url: jdbc:postgresql://postgres.host:5432/ganxu?currentSchema=ganxu&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    # Hikari 连接池配置
+    hikari:
+      # 最小空闲连接数量
+      minimum-idle: 5
+      # 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      # 连接池最大连接数，默认是10
+      maximum-pool-size: 10
+      # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+      # 连接池名称
+      pool-name: MyHikariCP
+      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      # 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      #connection-test-query: SELECT 1

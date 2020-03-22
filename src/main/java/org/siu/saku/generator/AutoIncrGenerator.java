@@ -7,7 +7,6 @@ import org.siu.saku.generator.distributor.Distributor;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.model.Url;
 
-import javax.annotation.Resource;
 import java.sql.Timestamp;
 
 /**
@@ -22,11 +21,11 @@ public class AutoIncrGenerator extends AbstractGenerator {
 
     private final Distributor distributor;
 
-    @Resource
-    protected DSLContext dsl;
+    protected final DSLContext dsl;
 
-    public AutoIncrGenerator(Distributor distributor) {
+    public AutoIncrGenerator(Distributor distributor, DSLContext dsl) {
         this.distributor = distributor;
+        this.dsl = dsl;
     }
 
 

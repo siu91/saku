@@ -8,7 +8,6 @@ import org.siu.saku.model.Url;
 import org.siu.saku.util.MurmurHash;
 import org.siu.saku.util.SakuUtil;
 
-import javax.annotation.Resource;
 import java.sql.Timestamp;
 
 /**
@@ -21,8 +20,11 @@ import java.sql.Timestamp;
 @Slf4j
 public class HashGenerator extends AbstractGenerator {
 
-    @Resource
-    protected DSLContext dsl;
+    protected final DSLContext dsl;
+
+    public HashGenerator(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
     @Override
     public Url shorten(String url) {

@@ -2,9 +2,9 @@ package org.siu.saku.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.siu.saku.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
-import org.siu.saku.jooq.tables.SakuPreRegister;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.model.Url;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,17 @@ public class AutoIncrGenerator extends AbstractGenerator {
         }
 
         return new Url(SakuUtil.id2SUrl(id), url);
+    }
+
+
+    @Override
+    public Url getUrl(String surl) {
+        long id = SakuUtil.sUrl2Id(surl);
+        String lurl = dsl.select(SakuShorturlMap.SAKU_SHORTURL_MAP.L_URL).from(SakuShorturlMap.SAKU_SHORTURL_MAP)
+                .where(SakuShorturlMap.SAKU_SHORTURL_MAP.ID.equal(id)).fetchOne().getValue(0).toString();
+
+        return new Url(surl,lurl);
+
     }
 
     /**

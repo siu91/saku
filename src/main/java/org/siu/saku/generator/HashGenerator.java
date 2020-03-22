@@ -16,5 +16,10 @@ public class HashGenerator extends AbstractGenerator {
         return null;
     }
 
+    @Override
+    Url getUrl(String surl) {
+        return null;
+    }
+
 
 }

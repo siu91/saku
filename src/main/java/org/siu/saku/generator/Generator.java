@@ -1,6 +1,5 @@
 package org.siu.saku.generator;
 
-import org.siu.saku.model.Url;
 
 /**
  * 短链生成器
@@ -11,11 +10,4 @@ import org.siu.saku.model.Url;
  */
 public interface Generator {
 
-    /**
-     * 短链生成
-     *
-     * @param url
-     * @return
-     */
-    Url generator(String url);
 }

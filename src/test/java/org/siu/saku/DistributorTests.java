@@ -3,10 +3,8 @@ package org.siu.saku;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.siu.saku.exception.CanNotRegisterNewStartIdError;
 import org.siu.saku.generator.AutoIncrGenerator;
 import org.siu.saku.generator.distributor.AtomicLongDistributor;
-import org.siu.saku.generator.distributor.LongAdderDistributor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,6 +29,12 @@ public class DistributorTests {
 
     @Autowired
     AutoIncrGenerator generator;
+
+    @Test
+    public void test0() {
+        generator.getUrl("8gv8iw");
+
+    }
 
     @Test
     public void test() {

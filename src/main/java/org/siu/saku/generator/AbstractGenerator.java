@@ -9,16 +9,19 @@ import org.siu.saku.model.Url;
  */
 public abstract class AbstractGenerator implements Generator {
 
-    @Override
-    public Url generator(String url) {
-        return shorten(url);
-    }
-
     /**
      * @param url
      * @return
      */
     public abstract Url shorten(String url);
+
+    /**
+     * 通过短链获取真实URL
+     *
+     * @param surl
+     * @return
+     */
+    abstract Url getUrl(String surl);
 
 
 }

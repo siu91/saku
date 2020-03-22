@@ -49,7 +49,7 @@ public class AtomicLongDistributor extends AbstractDistributor {
         IdSection idSection = getNextIdSection();
         if (idSection.isSuccess()) {
             this.current.set(idSection.getStart());
-            this.currentEnd.set(idSection.getEnd() - 1);
+            this.currentEnd.set(idSection.getEnd());
             log.info("注册ID号段[{}-{}]", idSection.getStart(), idSection.getEnd());
         }
 

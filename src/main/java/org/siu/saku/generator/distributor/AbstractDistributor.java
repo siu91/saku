@@ -3,6 +3,7 @@ package org.siu.saku.generator.distributor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.siu.saku.jooq.tables.SakuPreRegister;
 import org.siu.saku.model.IdSection;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public abstract class AbstractDistributor implements Distributor {
     protected int sectionSize = 1000;
 
     @Resource
-    protected  DSLContext dsl;
+    protected DSLContext dsl;
 
     /**
      * 派发ID
@@ -58,6 +59,10 @@ public abstract class AbstractDistributor implements Distributor {
 
     /**
      * 获取下一个号段
+     * <p>
+     * 先取号段id（自增，从1开始自增）
+     * start = currentSeq * sectionSize - sectionSize + 1;
+     * end = currentSeq * sectionSize;
      *
      * @return
      */
@@ -65,21 +70,24 @@ public abstract class AbstractDistributor implements Distributor {
     public IdSection getNextIdSection() {
         IdSection idSection = new IdSection();
         boolean success = true;
-        long nextStart = -1;
+        long start = -1, end = -1;
         try {
-            // 获取当前最大的ID
-            Object currentMax = dsl.select(SakuPreRegister.SAKU_PRE_REGISTER.END_NO.max()).from(SakuPreRegister.SAKU_PRE_REGISTER).fetch().getValue(0, 0);
-            nextStart = currentMax == null ? 0 : (Long) currentMax;
+            // 获取号段id
+            Long currentSeq = (Long) dsl.selectFrom("nextval('saku_pre_register_seq'::regclass)").fetch().getValue(0, 0);
+            start = currentSeq * sectionSize - sectionSize + 1;
+            end = currentSeq * sectionSize;
+
             // 注册新的ID号段
             dsl.insertInto(SakuPreRegister.SAKU_PRE_REGISTER,
-                    SakuPreRegister.SAKU_PRE_REGISTER.START_NO, SakuPreRegister.SAKU_PRE_REGISTER.END_NO, SakuPreRegister.SAKU_PRE_REGISTER.CREATE_TIME)
-                    .values(nextStart, nextStart + this.sectionSize, new Timestamp(System.currentTimeMillis())).execute();
+                    SakuPreRegister.SAKU_PRE_REGISTER.ID, SakuPreRegister.SAKU_PRE_REGISTER.START_NO, SakuPreRegister.SAKU_PRE_REGISTER.END_NO, SakuPreRegister.SAKU_PRE_REGISTER.CREATE_TIME)
+                    .values(currentSeq, start, end, new Timestamp(System.currentTimeMillis())).execute();
+
         } catch (Exception e) {
             success = false;
             log.error("CanNotRegisterNewStartIdError");
         }
 
-        return idSection.setStart(nextStart).setEnd(nextStart + sectionSize).setSuccess(success);
+        return idSection.setStart(start).setEnd(end).setSuccess(success);
 
     }
 

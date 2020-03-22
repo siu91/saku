@@ -52,7 +52,7 @@ public class LongAdderDistributor extends AbstractDistributor {
             IdSection idSection = getNextIdSection();
             if (idSection.isSuccess()) {
                 this.adder.add(idSection.getStart() - this.currentEnd.get());
-                this.currentEnd.set(idSection.getEnd() - 1);
+                this.currentEnd.set(idSection.getEnd());
                 log.info("注册ID号段[{}-{}]", idSection.getStart(), idSection.getEnd());
             }
         }

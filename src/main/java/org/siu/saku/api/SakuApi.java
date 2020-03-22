@@ -22,13 +22,13 @@ public class SakuApi {
     @Resource(name = "globalGenerator")
     AbstractGenerator generator;
 
-    @GetMapping("/s/{url}")
+    @GetMapping("/2s/{url}")
     public String saku(@PathVariable String url) {
 
         return generator.shorten(url).getSurl();
     }
 
-    @GetMapping("/l/{surl}")
+    @GetMapping("/2l/{surl}")
     public String saku1(@PathVariable String surl) {
         return generator.getUrl(surl).getUrl();
     }

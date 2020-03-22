@@ -2,8 +2,7 @@ package org.siu.saku.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.siu.saku.SakuUtil;
+import org.siu.saku.util.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.model.Url;
@@ -27,7 +26,7 @@ public class AutoIncrGenerator extends AbstractGenerator {
     @Resource(name = "longAdderDistributor")
     Distributor distributor;
 
-    @Autowired
+    @Resource
     protected DSLContext dsl;
 
 

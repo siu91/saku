@@ -1,4 +1,4 @@
-package org.siu.saku;
+package org.siu.saku.util;
 
 import lombok.experimental.UtilityClass;
 

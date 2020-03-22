@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.siu.saku.generator.AutoIncrGenerator;
+import org.siu.saku.generator.HashGenerator;
 import org.siu.saku.generator.distributor.AtomicLongDistributor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +30,21 @@ public class DistributorTests {
 
     @Autowired
     AutoIncrGenerator generator;
+
+    @Autowired
+    HashGenerator generator1;
+
+    @Test
+    public void testhash() {
+        generator1.shorten("https://blog.csdn.net/34214321/article/details/43214");
+
+    }
+
+    @Test
+    public void testhash1() {
+        generator1.getUrl("829mq9zt1pyy");
+
+    }
 
     @Test
     public void test0() {

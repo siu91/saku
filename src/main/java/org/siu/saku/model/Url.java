@@ -15,14 +15,14 @@ public class Url {
     @Getter
     private String surl;
     @Getter
-    private String lurl;
+    private String url;
 
-    public Url(String lurl) {
-        this.lurl = lurl;
+    public Url(String url) {
+        this.url = url;
     }
 
-    public Url(String surl, String lurl) {
+    public Url(String surl, String url) {
         this.surl = surl;
-        this.lurl = lurl;
+        this.url = url;
     }
 }

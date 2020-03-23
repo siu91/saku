@@ -19,6 +19,10 @@ public class Url {
     @Getter
     private String url;
 
+    @Setter
+    @Getter
+    private String firstSurl;
+
     @Getter
     private int duplicate;
 

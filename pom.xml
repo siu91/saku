@@ -84,6 +84,12 @@
             <version>3.12.4</version>
         </dependency>
 
+        <!-- com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.2-jre</version>
+        </dependency>
 
         <!--postgres 驱动-->
         <dependency>

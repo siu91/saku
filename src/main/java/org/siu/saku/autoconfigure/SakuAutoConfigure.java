@@ -3,6 +3,7 @@ package org.siu.saku.autoconfigure;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.siu.saku.filter.LocalBloomFilter;
 import org.siu.saku.generator.AbstractGenerator;
 import org.siu.saku.generator.AutoIncrGenerator;
 import org.siu.saku.generator.HashGenerator;
@@ -30,16 +31,22 @@ import org.springframework.context.annotation.Configuration;
 public class SakuAutoConfigure {
     private final SakuProperties properties;
 
+    @Bean
+    @ConditionalOnMissingBean
+    public LocalBloomFilter localBloomFilter() {
+        return new LocalBloomFilter();
+    }
+
 
     @Bean(name = "globalGenerator")
     @ConditionalOnMissingBean
-    public AbstractGenerator generator(DSLContext dsl) {
+    public AbstractGenerator generator(DSLContext dsl, LocalBloomFilter filter) {
         if ("dbincr".equals(this.properties.getType())) {
             Distributor distributor = new LongAdderDistributor(dsl);
             return new AutoIncrGenerator(distributor, dsl);
         }
 
-        return new HashGenerator(dsl);
+        return new HashGenerator(dsl, filter);
     }
 
 

@@ -3,6 +3,7 @@ package org.siu.saku.generator;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.siu.saku.filter.LocalBloomFilter;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.jooq.tables.SakuUrlMap;
 import org.siu.saku.model.Url;
@@ -23,9 +24,11 @@ import java.sql.Timestamp;
 public class HashGenerator extends AbstractGenerator {
 
     protected final DSLContext dsl;
+    protected final LocalBloomFilter filter;
 
-    public HashGenerator(DSLContext dsl) {
+    public HashGenerator(DSLContext dsl, LocalBloomFilter filter) {
         this.dsl = dsl;
+        this.filter = filter;
     }
 
     @Override
@@ -48,8 +51,20 @@ public class HashGenerator extends AbstractGenerator {
             return urlObject.setSurl(surl);
         } else {
             // 冲突，重试
+
+            // 判断过滤器中是否有记录
+            boolean exist = filter.exist(surl);
+            if (exist) {
+                return urlObject.setSurl(surl);
+            }
+            // 第一次冲突记录原始短链
+            if (urlObject.getDuplicate() == 0) {
+                urlObject.setFirstSurl(surl);
+            }
             // 冲突超过3次，判定为相同的url，重复请求，直接返回
             if (urlObject.getDuplicate() >= 3) {
+                // 放入过滤器
+                filter.put(urlObject.getFirstSurl());
                 log.warn("冲突超过3次，判定为重复请求：{}", urlObject.getUrl());
                 return urlObject.setSurl(surl);
             } else {

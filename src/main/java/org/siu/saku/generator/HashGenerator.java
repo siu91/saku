@@ -63,7 +63,7 @@ public class HashGenerator extends AbstractGenerator {
             }
             // 冲突超过3次，判定为相同的url，重复请求，直接返回
             if (urlObject.getDuplicate() >= 3) {
-                // 放入过滤器
+                // 放入过滤器，下次直接过滤
                 filter.put(urlObject.getFirstSurl());
                 log.warn("冲突超过3次，判定为重复请求：{}", urlObject.getUrl());
                 return urlObject.setSurl(surl);

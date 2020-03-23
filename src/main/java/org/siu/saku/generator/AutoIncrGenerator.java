@@ -2,6 +2,7 @@ package org.siu.saku.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.siu.saku.util.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
@@ -43,10 +44,10 @@ public class AutoIncrGenerator extends AbstractGenerator {
     @Override
     public Url getUrl(String surl) {
         long id = SakuUtil.sUrl2Id(surl);
-        String lurl = dsl.select(SakuShorturlMap.SAKU_SHORTURL_MAP.L_URL).from(SakuShorturlMap.SAKU_SHORTURL_MAP)
-                .where(SakuShorturlMap.SAKU_SHORTURL_MAP.ID.equal(id)).fetchOne().getValue(0).toString();
+        Record record = dsl.select(SakuShorturlMap.SAKU_SHORTURL_MAP.L_URL).from(SakuShorturlMap.SAKU_SHORTURL_MAP)
+                .where(SakuShorturlMap.SAKU_SHORTURL_MAP.ID.equal(id)).fetchOne();
 
-        return new Url(surl,lurl);
+        return new Url(surl, record == null ? null : record.getValue(0).toString());
 
     }
 

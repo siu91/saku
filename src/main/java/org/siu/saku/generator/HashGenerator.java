@@ -2,6 +2,7 @@ package org.siu.saku.generator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.jooq.tables.SakuUrlMap;
 import org.siu.saku.model.Url;
@@ -29,23 +30,43 @@ public class HashGenerator extends AbstractGenerator {
 
     @Override
     public Url shorten(String url) {
-        long id = MurmurHash.hash(url);
-        String surl = SakuUtil.id2SUrl(id);
-        if (save2Db(url, surl)) {
-            return new Url(surl, url);
-        } else {
-            return new Url(null, url);
-        }
+        Url urlObject = new Url(url);
+        return doShorten(urlObject);
+    }
 
+
+    private Url doShorten(Url urlObject) {
+        long id = MurmurHash.hash(urlObject.getUrl());
+        String surl = SakuUtil.id2SUrl(id);
+
+        Boolean ret = save2Db(urlObject.getUrl(), surl);
+        if (ret == null) {
+            // 异常
+            return urlObject;
+        } else if (ret) {
+            // 正常
+            return urlObject.setSurl(surl);
+        } else {
+            // 冲突，重试
+            // 冲突超过3次，判定为相同的url，重复请求，直接返回
+            if (urlObject.getDuplicate() >= 3) {
+                log.warn("冲突超过3次，判定为重复请求：{}", urlObject.getUrl());
+                return urlObject.setSurl(surl);
+            } else {
+                urlObject.duplicate();
+                return doShorten(urlObject);
+            }
+        }
 
     }
 
     @Override
     public Url getUrl(String surl) {
-        String lurl = dsl.select(SakuUrlMap.SAKU_URL_MAP.L_URL).from(SakuUrlMap.SAKU_URL_MAP)
-                .where(SakuUrlMap.SAKU_URL_MAP.S_URL.equal(surl)).fetchOne().getValue(0).toString();
+        Record record = dsl.select(SakuUrlMap.SAKU_URL_MAP.L_URL).from(SakuUrlMap.SAKU_URL_MAP)
+                .where(SakuUrlMap.SAKU_URL_MAP.S_URL.equal(surl)).fetchOne();
 
-        return new Url(surl, lurl);
+
+        return new Url(surl, record == null ? null : record.getValue(0).toString()).unDuplicate();
     }
 
 
@@ -54,8 +75,7 @@ public class HashGenerator extends AbstractGenerator {
      * @param surl
      * @return
      */
-    private boolean save2Db(String url, String surl) {
-        boolean success = true;
+    private Boolean save2Db(String url, String surl) {
         try {
             // 注册新的ID号段
             dsl.insertInto(SakuUrlMap.SAKU_URL_MAP,
@@ -64,14 +84,15 @@ public class HashGenerator extends AbstractGenerator {
         } catch (Exception e) {
             if (e instanceof DuplicateKeyException) {
                 log.debug("save to DB error:{}" + e.getMessage());
+                return false;
             } else {
-                success = false;
                 log.error("save to DB error:{}" + e.getMessage());
+                return null;
             }
 
         }
 
-        return success;
+        return true;
 
     }
 

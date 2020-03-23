@@ -7,6 +7,7 @@ import org.siu.saku.jooq.tables.SakuUrlMap;
 import org.siu.saku.model.Url;
 import org.siu.saku.util.MurmurHash;
 import org.siu.saku.util.SakuUtil;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.sql.Timestamp;
 
@@ -30,8 +31,13 @@ public class HashGenerator extends AbstractGenerator {
     public Url shorten(String url) {
         long id = MurmurHash.hash(url);
         String surl = SakuUtil.id2SUrl(id);
-        save2Db(url, surl);
-        return new Url(surl, url);
+        if (save2Db(url, surl)) {
+            return new Url(surl, url);
+        } else {
+            return new Url(null, url);
+        }
+
+
     }
 
     @Override
@@ -56,8 +62,13 @@ public class HashGenerator extends AbstractGenerator {
                     SakuUrlMap.SAKU_URL_MAP.L_URL, SakuUrlMap.SAKU_URL_MAP.S_URL, SakuShorturlMap.SAKU_SHORTURL_MAP.CREATE_TIME)
                     .values(url, surl, new Timestamp(System.currentTimeMillis())).execute();
         } catch (Exception e) {
-            success = false;
-            log.error("save to DB error:{}" + e.getMessage());
+            if (e instanceof DuplicateKeyException) {
+                log.debug("save to DB error:{}" + e.getMessage());
+            } else {
+                success = false;
+                log.error("save to DB error:{}" + e.getMessage());
+            }
+
         }
 
         return success;

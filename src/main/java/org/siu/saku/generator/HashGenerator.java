@@ -41,6 +41,11 @@ public class HashGenerator extends AbstractGenerator {
     private Url doShorten(Url urlObject) {
         long id = MurmurHash.hash(urlObject.getUrl());
         String surl = SakuUtil.id2SUrl(id);
+        // 判断过滤器中是否有记录
+        boolean exist = filter.exist(surl);
+        if (exist) {
+            return urlObject.setSurl(surl);
+        }
 
         Boolean ret = save2Db(urlObject.getUrl(), surl);
         if (ret == null) {
@@ -52,11 +57,6 @@ public class HashGenerator extends AbstractGenerator {
         } else {
             // 冲突，重试
 
-            // 判断过滤器中是否有记录
-            boolean exist = filter.exist(surl);
-            if (exist) {
-                return urlObject.setSurl(surl);
-            }
             // 第一次冲突记录原始短链
             if (urlObject.getDuplicate() == 0) {
                 urlObject.setFirstSurl(surl);

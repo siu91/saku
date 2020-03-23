@@ -11,14 +11,6 @@ package org.siu.saku.filter;
 public abstract class AbstractBloomFilter  implements Filter {
 
     /**
-     * 是否存在
-     *
-     * @param key
-     * @return
-     */
-    public abstract boolean exist(String key);
-
-    /**
      * 放入过滤器
      * @param key
      */

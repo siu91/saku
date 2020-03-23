@@ -17,4 +17,11 @@ public interface Filter {
      */
     void put(String s);
 
+    /**
+     * 是否存在
+     *
+     * @param key
+     */
+    boolean exist(String key);
+
 }

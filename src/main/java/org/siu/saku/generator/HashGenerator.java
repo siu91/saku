@@ -3,7 +3,7 @@ package org.siu.saku.generator;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.siu.saku.filter.LocalBloomFilter;
+import org.siu.saku.filter.Filter;
 import org.siu.saku.jooq.tables.SakuShorturlMap;
 import org.siu.saku.jooq.tables.SakuUrlMap;
 import org.siu.saku.model.Url;
@@ -24,9 +24,9 @@ import java.sql.Timestamp;
 public class HashGenerator extends AbstractGenerator {
 
     protected final DSLContext dsl;
-    protected final LocalBloomFilter filter;
+    protected final Filter filter;
 
-    public HashGenerator(DSLContext dsl, LocalBloomFilter filter) {
+    public HashGenerator(DSLContext dsl, Filter filter) {
         this.dsl = dsl;
         this.filter = filter;
     }

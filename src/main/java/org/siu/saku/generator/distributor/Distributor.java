@@ -24,4 +24,10 @@ public interface Distributor {
      */
     long current();
 
+
+    /**
+     * 重复的长链请求，把生成ID返回派发器
+     */
+    void back(long id);
+
 }

@@ -3,8 +3,6 @@ package org.siu.saku.generator.distributor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.siu.saku.model.IdSection;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
@@ -34,6 +32,10 @@ public class LongAdderDistributor extends AbstractDistributor {
 
     @Override
     public long getNext() {
+        Long id = backQueue.poll();
+        if (id != null) {
+            return id;
+        }
         if (this.adder.sum() >= this.currentEnd.get()) {
             register();
         }

@@ -3,14 +3,12 @@ package org.siu.saku.generator.distributor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.jooq.Query;
 import org.siu.saku.jooq.tables.SakuPreRegister;
 import org.siu.saku.model.IdSection;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * 派发ID
@@ -29,11 +27,22 @@ public abstract class AbstractDistributor implements Distributor {
     @Setter
     protected int sectionSize = 1000;
 
+    /**
+     * 返回给派发器（重复的URL）
+     */
+    protected final ConcurrentLinkedQueue<Long> backQueue = new ConcurrentLinkedQueue<>();
+
     protected final DSLContext dsl;
 
     public AbstractDistributor(DSLContext dsl) {
         this.dsl = dsl;
     }
+
+    @Override
+    public void back(long id) {
+        this.backQueue.add(id);
+    }
+
 
     /**
      * 派发ID
@@ -65,7 +74,7 @@ public abstract class AbstractDistributor implements Distributor {
      * 先取号段id（自增，从1开始自增）
      * start = currentSeq * sectionSize - sectionSize + 1;
      * end = currentSeq * sectionSize;
-     *
+     * <p>
      * mysql：
      * SELECT AUTO_INCREMENT FROM information_schema.`TABLES` WHERE Table_Schema='数据库名' AND table_name = '对应数据库下表名' LIMIT 1;
      *
@@ -95,8 +104,6 @@ public abstract class AbstractDistributor implements Distributor {
         return idSection.setStart(start).setEnd(end).setSuccess(success);
 
     }
-
-
 
 
 }

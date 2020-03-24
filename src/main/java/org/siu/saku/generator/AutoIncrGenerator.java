@@ -3,6 +3,7 @@ package org.siu.saku.generator;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.siu.saku.filter.Filter;
 import org.siu.saku.util.MD5Util;
 import org.siu.saku.util.SakuUtil;
 import org.siu.saku.generator.distributor.Distributor;
@@ -23,11 +24,13 @@ import java.sql.Timestamp;
 public class AutoIncrGenerator extends AbstractGenerator {
 
     private final Distributor distributor;
+    protected final Filter filter;
 
     protected final DSLContext dsl;
 
-    public AutoIncrGenerator(Distributor distributor, DSLContext dsl) {
+    public AutoIncrGenerator(Distributor distributor, Filter filter, DSLContext dsl) {
         this.distributor = distributor;
+        this.filter = filter;
         this.dsl = dsl;
     }
 
@@ -36,6 +39,12 @@ public class AutoIncrGenerator extends AbstractGenerator {
     public Url shorten(String url) {
         long id = distributor.next();
         String md5 = MD5Util.encode(url);
+        // 判断为重复的URL
+        if (this.filter.exist(md5)) {
+            String sulr = getSurlByLurlMd5(md5);
+            return new Url(sulr, url);
+        }
+
         Boolean ret = save2Db(id, url, md5);
         if (ret == null) {
             distributor.back(id);
@@ -44,6 +53,8 @@ public class AutoIncrGenerator extends AbstractGenerator {
             return new Url(SakuUtil.id2SUrl(id), url);
         } else {
             distributor.back(id);
+            // 加入过滤器，下次直接查库获取短链
+            filter.put(md5);
             String surl = getSurlByLurlMd5(md5);
             return new Url(surl, url);
         }

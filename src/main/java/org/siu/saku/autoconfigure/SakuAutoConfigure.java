@@ -44,7 +44,7 @@ public class SakuAutoConfigure {
     public AbstractGenerator generator(DSLContext dsl, Filter filter) {
         if ("dbincr".equals(this.properties.getType())) {
             Distributor distributor = new LongAdderDistributor(dsl);
-            return new AutoIncrGenerator(distributor, dsl);
+            return new AutoIncrGenerator(distributor, filter, dsl);
         }
 
         return new HashGenerator(dsl, filter);

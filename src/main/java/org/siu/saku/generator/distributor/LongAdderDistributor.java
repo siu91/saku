@@ -32,10 +32,6 @@ public class LongAdderDistributor extends AbstractDistributor {
 
     @Override
     public long getNext() {
-        Long id = backQueue.poll();
-        if (id != null) {
-            return id;
-        }
         if (this.adder.sum() >= this.currentEnd.get()) {
             register();
         }

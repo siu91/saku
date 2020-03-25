@@ -31,10 +31,6 @@ public class AtomicLongDistributor extends AbstractDistributor {
 
     @Override
     public long getNext() {
-        Long id = backQueue.poll();
-        if (id != null) {
-            return id;
-        }
         if (this.current.get() >= this.currentEnd.get()) {
             register();
         }

@@ -51,6 +51,10 @@ public abstract class AbstractDistributor implements Distributor {
      */
     @Override
     public long next() {
+        Long id = backQueue.poll();
+        if (id != null) {
+            return id;
+        }
         return getNext();
     }
 

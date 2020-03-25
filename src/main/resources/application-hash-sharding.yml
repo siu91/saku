@@ -39,10 +39,10 @@ sharding:
             table-strategy:
               inline:
                 sharding-column: id
-                algorithm-expression: saku_hash_url_map_$->{id % 11}
-            key-generator-column-name: id
-            # 表在真实数据库中的位置
-            actual-data-nodes: ds_$->{0..1}.saku_hash_url_map_$->{0..10}
+              algorithm-expression: saku_hash_url_map_$->{id % 11}
+              key-generator-column-name: id
+              # 表在真实数据库中的位置
+              actual-data-nodes: ds_$->{0..1}.saku_hash_url_map_$->{0..10}
         # 分库配置
         default-database-strategy:
           inline:
